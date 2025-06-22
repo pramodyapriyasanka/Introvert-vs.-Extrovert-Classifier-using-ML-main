@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Personality Classifier</title>
+<style>
+  /* ===== Variables ===== */
+  :root {
+    --bg-color: #f0f2f5;
+    --text-color: #333;
+    --input-bg: #e0e5ec;
+    --input-shadow-light: 8px 8px 15px #bebebe;
+    --input-shadow-dark: -8px -8px 15px #ffffff;
+    --primary-color: #5a67d8;
+    --primary-hover: #434aa8;
+    --result-bg: #d4f4dd;
+    --result-border: #4caf50;
+    --result-text: #2e7d32;
+    --icon-color: #5a67d8;
+  }
+  [data-theme="dark"] {
+    --bg-color: #121318;
+    --text-color: #e0e0e0;
+    --input-bg: #1f2233;
+    --input-shadow-light: 6px 6px 12px #191c2a;
+    --input-shadow-dark: -6px -6px 12px #242943;
+    --primary-color: #7f9cf5;
+    --primary-hover: #6279e8;
+    --result-bg: #213925;
+    --result-border: #66bb6a;
+    --result-text: #a5d6a7;
+    --icon-color: #7f9cf5;
+  }
+
+  /* ===== Base styles ===== */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 580px;
+    margin: 40px auto 60px;
+    padding: 0 20px 40px;
+    transition: background-color 0.4s ease, color 0.4s ease;
+    user-select: none;
+  }
+  h2 {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 30px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ===== Form elements ===== */
+  label {
+    display: block;
+    margin: 20px 0 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 15px;
+    background: var(--input-bg);
+    border: none;
+    box-shadow: var(--input-shadow-light), var(--input-shadow-dark);
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+  }
+  input[type="number"]:focus,
+  select:focus {
+    outline: none;
+    box-shadow:
+      inset 3px 3px 5px rgba(0,0,0,0.15),
+      inset -3px -3px 5px rgba(255,255,255,0.7);
+    background: var(--input-bg);
+  }
+  select option[disabled] {
+    color: #999;
+  }
+
+  /* ===== Error message ===== */
+  .error-message {
+    color: #e53e3e;
+    font-size: 0.85rem;
+    margin-top: 4px;
+    display: none;
+    user-select: none;
+  }
+
+  /* ===== Button ===== */
+  button[type="submit"] {
+    margin-top: 35px;
+    width: 100%;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    font-size: 1.1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(90,103,216,0.4);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+  }
+  button[type="submit"]:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 8px 20px rgba(67,74,168,0.6);
+  }
+
+  /* ===== Result Box ===== */
+  .result {
+    margin-top: 35px;
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid var(--result-border);
+    background-color: var(--result-bg);
+    color: var(--result-text);
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+    user-select: text;
+    word-wrap: break-word;
+  }
+
+  /* ===== Theme toggle button ===== */
+  #theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--icon-color);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.4s ease;
+    user-select: none;
+    z-index: 10000;
+  }
+  #theme-toggle svg {
+    width: 26px;
+    height: 26px;
+    fill: currentColor;
+    transition: transform 0.3s ease;
+  }
+  #theme-toggle:hover {
+    color: var(--primary-hover);
+  }
+
+  /* ===== Glowing sun icon in light mode ===== */
+  #icon-sun {
+    filter: drop-shadow(0 0 6px var(--primary-color));
+    transition: filter 0.3s ease;
+  }
+  [data-theme="dark"] #icon-sun {
+    filter: none;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 480px) {
+    body {
+      margin: 20px 15px 50px;
+      padding: 0 10px 30px;
+    }
+    button[type="submit"] {
+      padding: 14px;
+      font-size: 1rem;
+      border-radius: 18px;
+    }
+    #theme-toggle {
+      width: 32px;
+      height: 32px;
+    }
+    #theme-toggle svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  /* ===== Desktop tweaks ===== */
+  @media (min-width: 768px) {
+    body {
+      max-width: 720px;
+      margin: 50px auto 70px;
+      padding: 0 30px 50px;
+      font-size: 1.1rem;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 40px;
+    }
+    input[type="number"],
+    select {
+      font-size: 1.1rem;
+      padding: 16px 22px;
+      border-radius: 18px;
+    }
+    button[type="submit"] {
+      font-size: 1.2rem;
+      padding: 18px;
+      border-radius: 25px;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+    .result {
+      font-size: 1.25rem;
+      padding: 25px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+</style>
+</head>
+<body>
+  <button id="theme-toggle" aria-label="Toggle Dark Mode" title="Toggle Dark Mode" type="button">
+    <!-- Sun icon (light mode) -->
+    <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none;">
+      <path d="M12 18a6 6 0 100-12 6 6 0 000 12zm0 2a8 8 0 110-16 8 8 0 010 16zm0-14v-2m0 18v-2m-8-8h-2m18 0h-2m-14.364-6.364l-1.414-1.414m16.97 16.97l-1.414-1.414m0-14.142l1.414-1.414m-16.97 16.97l1.414-1.414"/>
+    </svg>
+    <!-- Moon icon (dark mode) -->
+    <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M21 12.79A9 9 0 0112.21 3a7 7 0 000 14 9 9 0 018.79-4.21z"/>
+    </svg>
+  </button>
+
+  <h2>Personality Classifier</h2>
+  <form method="POST" action="/predict" autocomplete="off" novalidate>
+    <label for="Time_spent_Alone">Time Spent Alone (hours):</label>
+    <input type="number" step="any" id="Time_spent_Alone" name="Time_spent_Alone" required min="0" />
+    <span class="error-message" aria-live="polite"></span>
+
+    <label for="Stage_fear">Stage Fear:</label>
+    <select id="Stage_fear" name="Stage_fear" required>
+      <option value="" disabled selected>Select one</option>
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+    </select>
+    <span class="error-message" aria-live="polite"></span>
+
+    <label for="Social_event_attendance">Social Event Attendance:</label>
+    <select id="Social_event_attendance" name="Social_event_attendance" required>
+      <option value="" disabled selected>Select one</option>
+      <option value="Rarely">Rarely</option>
+      <option value="Sometimes">Sometimes</option>
+      <option value="Often">Often</option>
+    </select>
+    <span class="error-message" aria-live="polite"></span>
+
+    <label for="Going_outside">Going Outside:</label>
+    <select id="Going_outside" name="Going_outside" required>
+      <option value="" disabled selected>Select one</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+    <span class="error-message" aria-live="polite"></span>
+
+    <label for="Drained_after_socializing">Drained After Socializing:</label>
+    <select id="Drained_after_socializing" name="Drained_after_socializing" required>
+      <option value="" disabled selected>Select one</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+    <span class="error-message" aria-live="polite"></span>
+
+    <label for="Friends_circle_size">Friends Circle Size:</label>
+    <input type="number" step="any" id="Friends_circle_size" name="Friends_circle_size" required min="0" />
+    <span class="error-message" aria-live="polite"></span>
+
+    <label for="Post_frequency">Post Frequency (per week):</label>
+    <input type="number" step="any" id="Post_frequency" name="Post_frequency" required min="0" />
+    <span class="error-message" aria-live="polite"></span>
+
+    <button type="submit">Predict Personality</button>
+  </form>
+
+  {% if prediction_text %}
+  <div class="result" role="region" aria-live="polite" tabindex="0">
+    {{ prediction_text }}
+  </div>
+  {% endif %}
+
+  <script>
+    const toggleBtn = document.getElementById('theme-toggle');
+    const iconSun = document.getElementById('icon-sun');
+    const iconMoon = document.getElementById('icon-moon');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+
+    function setTheme(theme) {
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        iconSun.style.display = 'block';
+        iconMoon.style.display = 'none';
+        toggleBtn.setAttribute('aria-label', 'Switch to Light Mode');
+        toggleBtn.title = 'Switch to Light Mode';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        iconSun.style.display = 'none';
+        iconMoon.style.display = 'block';
+        toggleBtn.setAttribute('aria-label', 'Switch to Dark Mode');
+        toggleBtn.title = 'Switch to Dark Mode';
+      }
+      localStorage.setItem('theme', theme);
+    }
+
+    // Initialize theme on load
+    setTheme(savedTheme);
+
+    toggleBtn.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+
+    // Custom validation message display
+    const form = document.querySelector('form');
+
+    function validateField(field) {
+      const errorSpan = field.nextElementSibling;
+      if (!field.checkValidity()) {
+        if (field.validity.valueMissing) {
+          errorSpan.textContent = 'This field is required.';
+        } else if (field.validity.rangeUnderflow) {
+          errorSpan.textContent = 'Value must be zero or more.';
+        } else {
+          errorSpan.textContent = '';
+        }
+        errorSpan.style.display = 'block';
+        return false;
+      } else {
+        errorSpan.textContent = '';
+        errorSpan.style.display = 'none';
+        return true;
+      }
+    }
+
+    form.addEventListener('submit', e => {
+      let valid = true;
+      form.querySelectorAll('input, select').forEach(field => {
+        if (!validateField(field)) {
+          valid = false;
+        }
+      });
+      if (!valid) {
+        e.preventDefault();
+      }
+    });
+
+    form.querySelectorAll('input, select').forEach(field => {
+      field.addEventListener('input', () => validateField(field));
+      field.addEventListener('blur', () => validateField(field));
+    });
+  </script>
+</body>
+</html>
