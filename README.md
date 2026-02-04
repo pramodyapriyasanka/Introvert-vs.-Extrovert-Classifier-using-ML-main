@@ -86,6 +86,6 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ---
 
-Developed by [Pramodya Priyasanka](https://[www.google.com/search?q=https://github.com/pramodyapriyasanka](https://github.com/pramodyapriyasanka))
+Developed by [Pramodya Priyasanka](https://www.bing.com/search?pglt=2339&q=pramodya+priyasanka&cvid=56031efe9772488084cb281a10617c0e&gs_lcrp=EgRlZGdlKgYIARBFGDkyBggAEEUYPDIGCAEQRRg5MgYIAhBFGD0yBggDEEUYPdIBCTEyMjA3ajBqMagCCLACAQ&FORM=ANNTA1&ucpdpc=UCPD&adppc=EdgeStart&PC=EDGEDB))
 
 
