@@ -86,6 +86,6 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ---
 
-Developed by [Pramodya Priyasanka](https://www.google.com/search?q=https://github.com/pramodyapriyasanka)
+Developed by [Pramodya Priyasanka](https://[www.google.com/search?q=https://github.com/pramodyapriyasanka](https://github.com/pramodyapriyasanka))
 
 
